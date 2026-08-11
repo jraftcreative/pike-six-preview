@@ -251,14 +251,13 @@
     .tier.feature{order:-1}
   }
   @media(max-width:620px){
-    .bar-right .btn{display:none}
-    .sticky-cta{display:flex}
     .hero-trust{display:none}
-    .hero-inner{padding-bottom:84px}
-    .wa{bottom:76px}
+    .bar{padding:0 16px}
+    .bar .btn{padding:11px 15px;font-size:.72rem;letter-spacing:.1em}
     .locked > div{padding:30px 24px}
-    footer{padding-bottom:82px}
-    footer .frow{justify-content:center;text-align:center}
+    footer{padding:26px var(--mx)}
+    footer .frow{flex-direction:column;align-items:center;text-align:center;gap:15px}
+    footer .foot-left,footer .foot-right{flex-direction:column;align-items:center;gap:10px}
   }
 
   /* founding offer: summary + registration form */
