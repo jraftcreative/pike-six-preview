@@ -447,7 +447,7 @@
           </div>
           <div class="field">
             <label for="f-phone">Phone <span class="req">*</span></label>
-            <input id="f-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" required>
+            <input id="f-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" pattern="[+()\-\s]*(?:\d[+()\-\s]*){8,}" title="Please enter a valid contact number with at least 8 digits." required>
           </div>
           <div class="field">
             <label for="f-email">Email <span class="req">*</span></label>
@@ -548,6 +548,12 @@
   if(ff){ff.addEventListener('submit',function(e){
     e.preventDefault();
     if(!ff.checkValidity()){ff.reportValidity();return;}
+    // extra guard: contact number must contain at least 8 digits
+    var phoneDigits=(ff.phone.value||'').replace(/\D/g,'');
+    if(phoneDigits.length<8){
+      ff.phone.setCustomValidity('Please enter a valid contact number with at least 8 digits.');
+      ff.reportValidity(); ff.phone.setCustomValidity(''); return;
+    }
     var btn=ff.querySelector('button[type=submit]');
     if(btn){ btn.disabled=true; btn.textContent='Sending...'; }
     var payload={
@@ -555,12 +561,18 @@
       email:ff.email.value.trim(), comments:ff.comments.value.trim(),
       source:'Website', gclid:pikeGclid(), page:location.href
     };
-    function done(){ document.getElementById('reserveForm').classList.add('done'); }
-    // text/plain keeps this a "simple" request (no CORS preflight); Apps Script runs
-    // server-side even though the browser can't read the redirected response.
-    fetch(FORM_ENDPOINT,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)})
-      .then(done).catch(done);
-    // TODO(Tyler): fire Meta pixel 'Lead' + Google Ads conversion here on success.
+    var body=JSON.stringify(payload);
+    // sendBeacon guarantees the lead is delivered even as we navigate to the thank-you page
+    try{
+      var blob=new Blob([body],{type:'text/plain;charset=utf-8'});
+      if(!(navigator.sendBeacon && navigator.sendBeacon(FORM_ENDPOINT, blob))){
+        fetch(FORM_ENDPOINT,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:body,keepalive:true});
+      }
+    }catch(err){
+      try{ fetch(FORM_ENDPOINT,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:body,keepalive:true}); }catch(e2){}
+    }
+    // dedicated thank-you page = clean URL for Google/Meta conversion tracking (Tyler)
+    window.location.href='thank-you.html';
   });}
 </script>
 <script>
