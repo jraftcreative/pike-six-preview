@@ -66,8 +66,35 @@
     </div>
   </div>
 
-  <!-- CONVERSION TRACKING (Tyler): fire Google Ads + Meta 'Lead' conversion on this page load.
-       This is the dedicated thank-you URL for tracking. Add the gtag/fbq conversion snippets here. -->
+  <!-- ============================================================
+       CONVERSION TRACKING (Tyler) — dedicated thank-you URL.
+       Fill the 3 values below with PIKE SIX's real IDs; until then
+       nothing fires (safe to leave in the live/preview page).
+       ============================================================ -->
+  <script>
+  (function(){
+    var GOOGLE_ADS_ID    = '';   // e.g. 'AW-1234567890'  (Google Ads > Goals > Conversions > tag setup)
+    var GOOGLE_ADS_LABEL = '';   // e.g. 'AbCdEfGhIjKl'   (the conversion label, same screen)
+    var META_PIXEL_ID    = '';   // e.g. '1234567890'     (Meta Events Manager > Data sources)
+
+    // Google Ads conversion (Enhanced Conversions enabled account-side)
+    if (GOOGLE_ADS_ID && GOOGLE_ADS_LABEL) {
+      var g=document.createElement('script'); g.async=true;
+      g.src='https://www.googletagmanager.com/gtag/js?id='+GOOGLE_ADS_ID;
+      document.head.appendChild(g);
+      window.dataLayer=window.dataLayer||[]; function gtag(){dataLayer.push(arguments);} window.gtag=gtag;
+      gtag('js', new Date()); gtag('config', GOOGLE_ADS_ID);
+      gtag('event','conversion',{'send_to':GOOGLE_ADS_ID+'/'+GOOGLE_ADS_LABEL});
+    }
+
+    // Meta Pixel 'Lead'
+    if (META_PIXEL_ID) {
+      !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', META_PIXEL_ID); fbq('track','PageView'); fbq('track','Lead');
+    }
+  })();
+  </script>
+
   <script>
     (function(){
       var bg=document.querySelector('.ty-bg'); if(!bg)return;
