@@ -447,7 +447,7 @@
           </div>
           <div class="field">
             <label for="f-phone">Phone <span class="req">*</span></label>
-            <input id="f-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" pattern="[+()\-\s]*(?:\d[+()\-\s]*){8,}" title="Please enter a valid contact number with at least 8 digits." required>
+            <input id="f-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" pattern="(?:[^0-9]*[0-9]){8,}[^0-9]*" title="Please enter a valid contact number with at least 8 digits." required>
           </div>
           <div class="field">
             <label for="f-email">Email <span class="req">*</span></label>
