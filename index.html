@@ -535,19 +535,32 @@
     }
     tick();setInterval(tick,1000);
   })();
-  // founding registration form
+  // founding registration form -> Apps Script backend (Website Leads tab) + email
+  var FORM_ENDPOINT='https://script.google.com/macros/s/AKfycbzmytCvzE93JOZFogkPvwshAKY341Zru1rqJn-hDui4957V5N4eH3HHVgYTBauXpeqk/exec';
+  function pikeGclid(){
+    try{
+      var g=new URLSearchParams(location.search).get('gclid');
+      if(g){ localStorage.setItem('pike_gclid', g); }
+      return g || localStorage.getItem('pike_gclid') || '';
+    }catch(e){ return ''; }
+  }
   var ff=document.getElementById('foundingForm');
   if(ff){ff.addEventListener('submit',function(e){
     e.preventDefault();
     if(!ff.checkValidity()){ff.reportValidity();return;}
-    var data={
+    var btn=ff.querySelector('button[type=submit]');
+    if(btn){ btn.disabled=true; btn.textContent='Sending...'; }
+    var payload={
       name:ff.name.value.trim(), phone:ff.phone.value.trim(),
-      email:ff.email.value.trim(), comments:ff.comments.value.trim()
+      email:ff.email.value.trim(), comments:ff.comments.value.trim(),
+      source:'Website', gclid:pikeGclid(), page:location.href
     };
-    // TODO(backend): POST `data` to PIKE SIX's endpoint (Apps Script / CRM / email),
-    // then fire the Meta + Google conversion event here on success.
-    console.log('founding registration', data);
-    document.getElementById('reserveForm').classList.add('done');
+    function done(){ document.getElementById('reserveForm').classList.add('done'); }
+    // text/plain keeps this a "simple" request (no CORS preflight); Apps Script runs
+    // server-side even though the browser can't read the redirected response.
+    fetch(FORM_ENDPOINT,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)})
+      .then(done).catch(done);
+    // TODO(Tyler): fire Meta pixel 'Lead' + Google Ads conversion here on success.
   });}
 </script>
 <script>
